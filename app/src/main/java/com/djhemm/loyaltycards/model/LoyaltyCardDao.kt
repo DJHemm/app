@@ -32,4 +32,7 @@ interface LoyaltyCardDao {
 
     @Query("SELECT DISTINCT category FROM loyalty_cards ORDER BY category ASC")
     fun getAllCategories(): LiveData<List<String>>
+    
+    @Query("SELECT * FROM loyalty_cards WHERE storeName LIKE '%' || :query || '%' OR cardNumber LIKE '%' || :query || '%' OR barcode LIKE '%' || :query || '%' ORDER BY storeName ASC")
+    fun searchCardsSafe(query: String): LiveData<List<LoyaltyCard>>
 }

@@ -13,7 +13,8 @@ class LoyaltyCardRepository(private val loyaltyCardDao: LoyaltyCardDao) {
     }
     
     fun searchCards(query: String): LiveData<List<LoyaltyCard>> {
-        return loyaltyCardDao.searchCards("%$query%")
+        // Use safe search that properly handles the LIKE query
+        return loyaltyCardDao.searchCardsSafe(query)
     }
     
     suspend fun insert(card: LoyaltyCard): Long {

@@ -7,10 +7,12 @@ import android.view.MenuItem
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.djhemm.loyaltycards.R
 import com.djhemm.loyaltycards.adapter.CardAdapter
 import com.djhemm.loyaltycards.databinding.ActivityMainBinding
+import com.djhemm.loyaltycards.model.LoyaltyCard
 import com.djhemm.loyaltycards.viewmodel.LoyaltyCardViewModel
 import com.djhemm.loyaltycards.viewmodel.ViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -22,6 +24,9 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: LoyaltyCardViewModel by viewModels {
         ViewModelFactory((application as LoyaltyCardsApp).repository)
     }
+    
+    // Keep track of current observer to avoid memory leaks
+    private var currentCardsObserver: Observer<List<LoyaltyCard>>? = null
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,9 +60,14 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun observeData() {
-        viewModel.allCards.observe(this) { cards ->
+        // Remove previous observer if exists
+        currentCardsObserver?.let { viewModel.allCards.removeObserver(it) }
+        
+        currentCardsObserver = Observer { cards ->
             adapter.updateCards(cards)
         }
+        
+        viewModel.allCards.observe(this, currentCardsObserver!!)
     }
     
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -92,14 +102,19 @@ class MainActivity : AppCompatActivity() {
     }
     
     private fun searchCards(query: String) {
+        // Remove previous observer
+        currentCardsObserver?.let { viewModel.allCards.removeObserver(it) }
+        
         if (query.isBlank()) {
-            viewModel.allCards.observe(this) { cards ->
+            currentCardsObserver = Observer { cards ->
                 adapter.updateCards(cards)
             }
+            viewModel.allCards.observe(this, currentCardsObserver!!)
         } else {
-            viewModel.searchCards(query).observe(this) { cards ->
+            currentCardsObserver = Observer { cards ->
                 adapter.updateCards(cards)
             }
+            viewModel.searchCards(query).observe(this, currentCardsObserver!!)
         }
     }
     
@@ -109,9 +124,15 @@ class MainActivity : AppCompatActivity() {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.all_categories)
             .setItems(categories) { _, which ->
+                // Remove previous observer
+                currentCardsObserver?.let { viewModel.allCards.removeObserver(it) }
+                
                 when (which) {
-                    0 -> viewModel.allCards.observe(this) { cards ->
-                        adapter.updateCards(cards)
+                    0 -> {
+                        currentCardsObserver = Observer { cards ->
+                            adapter.updateCards(cards)
+                        }
+                        viewModel.allCards.observe(this, currentCardsObserver!!)
                     }
                     else -> {
                         val category = when (which) {
@@ -122,12 +143,20 @@ class MainActivity : AppCompatActivity() {
                             5 -> "Pharmacy"
                             else -> "Other"
                         }
-                        viewModel.getCardsByCategory(category).observe(this) { cards ->
+                        currentCardsObserver = Observer { cards ->
                             adapter.updateCards(cards)
                         }
+                        viewModel.getCardsByCategory(category).observe(this, currentCardsObserver!!)
                     }
                 }
             }
             .show()
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        // Clean up observer to prevent memory leaks
+        currentCardsObserver?.let { viewModel.allCards.removeObserver(it) }
+        currentCardsObserver = null
     }
 }

@@ -34,11 +34,11 @@ class CardAdapter(
         val card = cards[position]
         
         holder.storeName.text = card.storeName
-        holder.cardNumber.text = card.cardNumber ?: card.barcode ?: "No number"
-        holder.category.text = card.category
+        holder.cardNumber.text = card.cardNumber ?: card.barcode ?: holder.itemView.context.getString(R.string.no_card_number)
+        holder.category.text = card.category.takeIf { it.isNotBlank() } ?: holder.itemView.context.getString(R.string.category_other)
         
         card.expiryDate?.let {
-            holder.expiryDate.text = "Expires: ${dateFormat.format(it)}"
+            holder.expiryDate.text = "${holder.itemView.context.getString(R.string.expiry_date)}: ${dateFormat.format(it)}"
             holder.expiryDate.visibility = View.VISIBLE
         } ?: run {
             holder.expiryDate.visibility = View.GONE

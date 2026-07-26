@@ -16,6 +16,7 @@ import com.google.zxing.integration.android.IntentIntegrator
 import com.google.zxing.integration.android.IntentResult
 import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 
 class AddEditCardActivity : AppCompatActivity() {
@@ -27,6 +28,10 @@ class AddEditCardActivity : AppCompatActivity() {
     
     private var cardId: Long? = null
     private var currentCard: LoyaltyCard? = null
+    private var selectedExpiryDate: Date? = null
+    
+    // Date format for display
+    private val displayDateFormat = SimpleDateFormat("MMM yyyy", Locale.getDefault())
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,12 +68,11 @@ class AddEditCardActivity : AppCompatActivity() {
             val day = calendar.get(Calendar.DAY_OF_MONTH)
             
             DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
-                val selectedDate = Calendar.getInstance().apply {
+                val selectedCalendar = Calendar.getInstance().apply {
                     set(selectedYear, selectedMonth, selectedDay)
-                }.time
-                
-                val dateFormat = SimpleDateFormat("MMM yyyy", Locale.getDefault())
-                binding.expiryDate.setText(dateFormat.format(selectedDate))
+                }
+                selectedExpiryDate = selectedCalendar.time
+                binding.expiryDate.setText(displayDateFormat.format(selectedCalendar.time))
             }, year, month, day).show()
         }
     }
@@ -76,7 +80,7 @@ class AddEditCardActivity : AppCompatActivity() {
     private fun setupScanButton() {
         binding.scanBarcodeButton.setOnClickListener {
             val integrator = IntentIntegrator(this)
-            integrator.setPrompt("Scan a barcode")
+            integrator.setPrompt(getString(R.string.scan_barcode))
             integrator.setOrientationLocked(true)
             integrator.initiateScan()
         }
@@ -104,8 +108,8 @@ class AddEditCardActivity : AppCompatActivity() {
                     binding.barcode.setText(it.barcode)
                     binding.category.setText(it.category, false)
                     it.expiryDate?.let { date ->
-                        val dateFormat = SimpleDateFormat("MMM yyyy", Locale.getDefault())
-                        binding.expiryDate.setText(dateFormat.format(date))
+                        selectedExpiryDate = date
+                        binding.expiryDate.setText(displayDateFormat.format(date))
                     }
                     binding.notes.setText(it.notes)
                 }
@@ -116,7 +120,7 @@ class AddEditCardActivity : AppCompatActivity() {
     private fun saveCard() {
         val storeName = binding.storeName.text.toString().trim()
         if (storeName.isBlank()) {
-            Toast.makeText(this, "Please enter a store name", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.error_store_name_required, Toast.LENGTH_SHORT).show()
             return
         }
         
@@ -125,12 +129,8 @@ class AddEditCardActivity : AppCompatActivity() {
         val category = binding.category.text.toString().trim().takeIf { it.isNotBlank() } ?: "Other"
         val notes = binding.notes.text.toString().trim().takeIf { it.isNotBlank() }
         
-        val expiryDate = try {
-            val dateFormat = SimpleDateFormat("MMM yyyy", Locale.getDefault())
-            dateFormat.parse(binding.expiryDate.text.toString().trim())
-        } catch (e: Exception) {
-            null
-        }
+        // Use the selected date directly instead of parsing from text
+        val expiryDate = selectedExpiryDate
         
         val card = currentCard?.copy(
             storeName = storeName,
@@ -154,7 +154,7 @@ class AddEditCardActivity : AppCompatActivity() {
             viewModel.update(card)
         }
         
-        Toast.makeText(this, "Card saved", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.card_saved, Toast.LENGTH_SHORT).show()
         finish()
     }
     
