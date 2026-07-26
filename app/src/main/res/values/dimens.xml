@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="default_margin">16dp</dimen>
+    <dimen name="small_margin">8dp</dimen>
+    <dimen name="card_corner_radius">8dp</dimen>
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="fab_size">56dp</dimen>
+    <dimen name="toolbar_height">56dp</dimen>
+    <dimen name="barcode_height">100dp</dimen>
+</resources>

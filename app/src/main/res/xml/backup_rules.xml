@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- No full backup for loyalty card data -->
+    <exclude domain="database" path="loyalty_cards_db" />
+    <exclude domain="sharedpref" path="." />
+</full-backup-content>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.LoyaltyCards">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="CardItemStyle">
+        <item name="android:padding">16dp</item>
+        <item name="android:background">@drawable/card_item_background</item>
+    </style>
+</resources>
