@@ -1,9 +1,10 @@
 // Enable the Gradle plugin portal to download plugins
+// This is the MOST IMPORTANT part - Google's Maven repo must be included
 pluginManagement {
     repositories {
+        google()  // 🎯 CRUCIAL: Google's Maven repo for Android plugins
+        mavenCentral()  // For other plugins
         gradlePluginPortal()
-        google()
-        mavenCentral()
     }
 }
 
@@ -11,7 +12,7 @@ pluginManagement {
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
-        google()
+        google()  // 🎯 CRUCIAL: Google's Maven repo for Android libraries
         mavenCentral()
     }
 }
