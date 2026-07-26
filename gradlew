@@ -1,0 +1,106 @@
+#!/bin/sh
+
+#
+# Copyright © 2015-2021 the original author or authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+##############################################################################
+#   IMPORTANT: Do not modify this file unless you are sure that
+#   you know what you are doing. If you are not sure then rather
+#   modify the file gradle-wrapper.properties which can be found next
+#   to this file.
+##############################################################################
+
+# If the JAVA_HOME environment variable is not defined then use the directory
+# where the Java executable is located (if this is defined).
+
+# Add default JVM options here. You can also use JAVA_OPTS and GRADLE_OPTS to pass JVM options to this script.
+default_jvm_opts='"-Xmx64m" "-Dfile.encoding=UTF-8"'
+
+APP_NAME="Gradle"
+APP_BASE_NAME=`basename "$0"`
+
+# Use the maximum available, or set MAX_FD != -1 to use that value.
+MAX_FD=maximum
+
+warn () {
+    echo "$*"
+} >&2
+
+die () {
+    echo
+    echo "$*"
+    echo
+    exit 1
+} >&2
+
+# OS specific support (must be 'true' or 'false').
+cygwin=false
+msys=false
+darwin=false
+nonstop=false
+case "`uname`" in                #(\n  CYGWIN* )         cygwin=true  ;; #(\n  Darwin* )         darwin=true  ;; #(\n  MSYS* | MINGW* )  msys=true    ;; #(\n  NonStop* )        nonstop=true ;;
+esac
+
+CLASSPATH=$APP_HOME/gradle/wrapper/gradle-wrapper.jar
+
+
+# Determine the Java command to use to start the JVM.
+if [ -n "$JAVA_HOME" ] ; then
+    if [ -x "$JAVA_HOME/bin/java" ] ; then
+        JAVACMD=$JAVA_HOME/bin/java
+    else
+        die "ERROR: JAVA_HOME is set to an invalid directory: $JAVA_HOME
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+else
+    JAVACMD=java
+    if ! command -v java >/dev/null 2>&1
+    then
+        die "ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+
+Please set the JAVA_HOME variable in your environment to match the
+location of your Java installation."
+    fi
+fi
+
+# Increase the maximum file descriptors if we can.
+if ! "$cygwin" && ! "$darwin" && ! "$nonstop" ; then
+    case $MAX_FD in #(\n      max*)
+        MAX_FD=$(ulimit -H -n)
+        if [ $? -eq 0 ] ; then
+          :
+        else
+          warn "Could not query maximum file descriptor limit"
+        fi
+        ;;
+    esac
+    case $MAX_FD in  #(\n      '' | soft) :;; #(\n      hard) MAX_FD=$(ulimit -H -n);;
+      *)              ;;
+    esac
+fi
+
+# Collect all arguments for the java command, following the shell quoting and substitution rules
+eval set -- $DEFAULT_JVM_OPTS $JAVA_OPTS $GRADLE_OPTS "\"-Dorg.gradle.appname=$APP_BASE_NAME\"" -classpath "\"$CLASSPATH\"" org.gradle.wrapper.GradleWrapperMain "$@"
+
+# by default we should be in the correct project dir, but when run from Finder on Mac, the cwd is wrong
+if [ "$OS" = "Windows_NT" ] ; then
+    # cygwin path, windows style path
+    PROJECT_DIR=$(cygpath --path --windows "$PROJECT_DIR")
+fi
+
+exec "$JAVACMD" "$@"

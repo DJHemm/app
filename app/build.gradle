@@ -20,8 +20,6 @@ android {
 
     signingConfigs {
         release {
-            // For local builds, you can create a keystore file
-            // Or use debug keystore for testing
             storeFile file('loyaltycards.keystore')
             storePassword System.getenv('KEYSTORE_PASSWORD') ?: 'android'
             keyAlias System.getenv('KEY_ALIAS') ?: 'loyaltycards'

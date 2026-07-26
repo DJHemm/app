@@ -1,2 +1,20 @@
+// Enable the Gradle plugin portal to download plugins
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+    }
+}
+
+// Enable the Gradle Central Plugin Repository
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
 rootProject.name = 'LoyaltyCards'
 include ':app'
